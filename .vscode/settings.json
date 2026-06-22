@@ -15,5 +15,6 @@
     "--query-driver=**",
     "--compile-commands-dir=c:\\Users\\Yogita\\embedded_comm_stack\\build"
   ],
-  "idf.flashType": "UART"
+  "idf.flashType": "UART",
+  "C_Cpp.errorSquiggles": "enabled"
 }
