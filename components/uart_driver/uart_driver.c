@@ -4,7 +4,6 @@
 #include "sdkconfig.h"
 #include "uart_driver.h"
 
-
 /*
  * UART driver initialization
  *
@@ -30,7 +29,7 @@ void uart_driver_init()
     uart_config_t uart_config = {
         .baud_rate = 115200,
         .data_bits = UART_DATA_8_BITS,
-        .parity    = UART_PARITY_DISABLE,
+        .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE, /* Hardware flow control disabled.*/
         .rx_flow_ctrl_thresh = 122,
@@ -52,7 +51,8 @@ void uart_driver_init()
      * For UART0 on DevKit, USB-UART bridge is normally connected
      * internally. Other UARTs require external wiring.
      */
-    ESP_ERROR_CHECK(uart_set_pin(UART_PORT, TX_PIN, RX_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    ESP_ERROR_CHECK(
+        uart_set_pin(UART_PORT, TX_PIN, RX_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 
     /*
      * Install UART driver.
@@ -66,7 +66,8 @@ void uart_driver_init()
      * No event queue used currently.
      * Interrupt/ring-buffer handling will be added later.
      */
-    ESP_ERROR_CHECK(uart_driver_install(UART_PORT, UART_TX_BUFFER_SIZE, UART_RX_BUFFER_SIZE, 0, NULL, 0));
+    ESP_ERROR_CHECK(
+        uart_driver_install(UART_PORT, UART_TX_BUFFER_SIZE, UART_RX_BUFFER_SIZE, 0, NULL, 0));
 }
 
 /*
@@ -74,7 +75,17 @@ void uart_driver_init()
  * This abstraction allows us to replace the lower layer later
  * without changing application code.
  */
-void uart_driver_send(const char *data)
+void uart_driver_send(const char* data)
 {
     uart_write_bytes(UART_PORT, data, strlen(data));
+}
+
+/*
+ * UART receive API
+ */
+int uart_driver_receive(char* rx_buffer, size_t size)
+{
+    int bytes = uart_read_bytes(UART_PORT, (uint8_t*)rx_buffer, size, pdMS_TO_TICKS(5000));
+    /*printf("RX bytes = %d\n", bytes);*/
+    return bytes;
 }
