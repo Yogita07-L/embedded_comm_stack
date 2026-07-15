@@ -44,8 +44,8 @@
  */
 void uart_driver_init(void);
 
-void uart_driver_send(const char *data);
+void uart_driver_send(const char* data);
 
-int uart_driver_receive(char *rx_buffer, size_t size);
+int uart_driver_receive(char* rx_buffer, size_t size);
 
 #endif
