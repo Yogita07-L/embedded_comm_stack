@@ -12,7 +12,7 @@
  * to the USB serial converter on the DevKit board,
  * allowing testing through idf.py monitor.
  */
-#define UART_PORT UART_NUM_0
+#define UART_PORT UART_NUM_2
 
 /*
  * GPIO mapping
@@ -23,8 +23,8 @@
  * RX:
  * Receive pin - ESP32 receives data here
  */
-#define TX_PIN 1
-#define RX_PIN 3
+#define TX_PIN 17
+#define RX_PIN 16
 
 /*
  * Driver software buffer sizes.
@@ -44,8 +44,21 @@
  */
 void uart_driver_init(void);
 
-void uart_driver_send(const char* data);
+/**
+ * Send raw bytes through UART.
+ * data : buffer containing bytes to transmit
+ * length : number of bytes to send
+ */
+void uart_driver_send(const uint8_t* data, uint16_t length);
 
-int uart_driver_receive(char* rx_buffer, size_t size);
+/*
+ * Receive bytes from UART.
+ *
+ * rx_buffer : buffer to store received bytes
+ * size      : maximum bytes to read
+ *
+ * Returns number of received bytes.
+ */
+int uart_driver_receive(uint8_t* rx_buffer, size_t size);
 
 #endif
