@@ -62,7 +62,46 @@ int main(void)
         printf("0x%02X ", encoded_buffer[i]);
     }
 
-    printf("\n");
+    printf("\n\n");
 
+    printf("========== DECODE PACKET TEST ==========\n");
+
+    /*
+        Received packet from UART:
+
+        START LENGTH PAYLOAD CRC
+
+        AA    03     41 42 43  68
+    */
+
+    uint8_t received_buffer[] = {0xAA, 0x03, 0x41, 0x42, 0x43, 0x68};
+
+    packet_t decoded_packet;
+
+    bool status = decode_packet(received_buffer, sizeof(received_buffer), &decoded_packet);
+
+    if (status)
+    {
+        printf("Packet valid\n");
+
+        printf("Start byte : 0x%02X\n", decoded_packet.start_byte);
+
+        printf("Length     : %d\n", decoded_packet.length);
+
+        printf("Payload    : ");
+
+        for (uint8_t i = 0; i < decoded_packet.length; i++)
+        {
+            printf("0x%02X ", decoded_packet.payload[i]);
+        }
+
+        printf("\n");
+
+        printf("CRC        : 0x%02X\n", decoded_packet.crc);
+    }
+    else
+    {
+        printf("Packet invalid\n");
+    }
     return 0;
 }

@@ -77,3 +77,40 @@ uint8_t calculate_crc8(const uint8_t* data, uint16_t length)
 
     return crc;
 }
+
+bool decode_packet(uint8_t* encoded_buffer, uint16_t buffer_length, packet_t* pkt)
+{
+    if (encoded_buffer[0] != 0xAA)
+        return false;
+
+    if (buffer_length < pkt->length + 3)
+        return false;
+
+    pkt->start_byte = encoded_buffer[0];
+    pkt->length = encoded_buffer[1];
+    for (uint16_t itr = 0; itr < pkt->length; itr++)
+    {
+        pkt->payload[itr] = encoded_buffer[itr + 2];
+    }
+
+    // Prepare CRC calculation buffer
+    uint8_t crc_buffer[255];
+    crc_buffer[0] = pkt->length;
+
+    for (uint16_t i = 0; i < pkt->length; i++)
+    {
+        crc_buffer[i + 1] = pkt->payload[i];
+    }
+
+    uint8_t calc_crc = calculate_crc8(crc_buffer, pkt->length + 1);
+
+    uint8_t received_crc = encoded_buffer[pkt->length + 2];
+
+    if (received_crc != calc_crc)
+    {
+        return false;
+    }
+
+    pkt->crc = received_crc;
+    return true;
+}

@@ -1,6 +1,7 @@
 #ifndef PACKET_H
 #define PACKET_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef struct
@@ -40,5 +41,16 @@ uint16_t encode_packet(packet_t* pkt, uint8_t encoded_buffer[], uint16_t buffer_
  * Initial value: 0x00
  */
 uint8_t calculate_crc8(const uint8_t* data, uint16_t length);
+
+/*
+ * Decode a received packet.
+ *
+ * Checks the packet format and verifies CRC.
+ * Extracts payload data if the packet is valid.
+ *
+ * Returns true if the packet passes CRC validation.
+ * Returns false if the packet is corrupted.
+ */
+bool decode_packet(uint8_t* encoded_buffer, uint16_t buffer_length, packet_t* pkt);
 
 #endif
