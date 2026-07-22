@@ -1,7 +1,7 @@
 idf_component_register(SRCS "main.c"
                        PRIV_REQUIRES esp_driver_uart
                        INCLUDE_DIRS "."
-                       REQUIRES uart_driver packet
+                       REQUIRES uart_driver packet parser
                        
 )
  
