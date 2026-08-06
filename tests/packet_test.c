@@ -1,4 +1,5 @@
 #include "packet.h"
+#include "uart_parser.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -102,6 +103,67 @@ int main(void)
     else
     {
         printf("Packet invalid\n");
+    }
+
+    /*----------------------------------------------------------
+     * Test 5 : Packet Parser Test
+     *
+     * Simulates UART receiving one byte at a time.
+     *
+     * Expected packet:
+     *
+     * START LENGTH PAYLOAD      CRC
+     * AA    03     41 42 43     68
+     *
+     *---------------------------------------------------------*/
+
+    printf("\n========== PARSER TEST ==========\n");
+
+    uint8_t rx_stream[] = {0xAA, 0x03, 0x41, 0x42, 0x43, 0x68};
+
+    parser_t parser;
+
+    packet_t parsed_packet;
+
+    parser_init(&parser);
+
+    bool packet_received = false;
+
+    /*
+     * Feed received bytes one by one.
+     * This represents UART byte reception.
+     */
+    for (uint8_t i = 0; i < sizeof(rx_stream); i++)
+    {
+        printf("RX Byte : 0x%02X\n", rx_stream[i]);
+
+        if (parser_process_byte(&parser, rx_stream[i], &parsed_packet))
+        {
+            packet_received = true;
+            break;
+        }
+    }
+
+    if (packet_received)
+    {
+        printf("\nPacket received successfully\n");
+
+        printf("Start Byte : 0x%02X\n", parsed_packet.start_byte);
+
+        printf("Length     : %d\n", parsed_packet.length);
+
+        printf("Payload    : ");
+
+        for (uint8_t i = 0; i < parsed_packet.length; i++)
+        {
+            printf("0x%02X ", parsed_packet.payload[i]);
+        }
+
+        printf("\nCRC        : 0x%02X\n", parsed_packet.crc);
+    }
+    else
+    {
+        printf("\nParser failed to complete packet\n");
     }
     return 0;
 }

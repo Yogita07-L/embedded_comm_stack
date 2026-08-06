@@ -1,5 +1,6 @@
 #include "packet.h"
 #include "uart_driver.h"
+#include "uart_parser.h"
 #include <stdio.h>
 
 void app_main(void)
@@ -54,7 +55,6 @@ void app_main(void)
     uint8_t rx_buffer[260];
     uint16_t rx_length = uart_driver_receive(rx_buffer, sizeof(rx_buffer));
 
-    packet_t rx_packet;
     printf("Received bytes:\n");
 
     for (int i = 0; i < rx_length; i++)
@@ -63,6 +63,31 @@ void app_main(void)
     }
 
     printf("\n");
+
+    packet_t rx_packet;
+    bool packet_received = false;
+
+    parser_t parser;
+
+    parser_init(&parser);
+
+    for (uint16_t itr = 0; itr < rx_length; itr++)
+    {
+        if (parser_process_byte(&parser, rx_buffer[itr], &rx_packet))
+        {
+            packet_received = true;
+            break;
+        }
+    }
+
+    if (packet_received)
+    {
+        printf("Parser completed packet\n");
+    }
+    else
+    {
+        printf("Parser incomplete\n");
+    }
 
     /* Decode received packet */
     if (decode_packet(rx_buffer, rx_length, &rx_packet))
